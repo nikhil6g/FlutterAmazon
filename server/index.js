@@ -26,7 +26,6 @@ app.use(authRouter);
         'beautiness':'5-star'
     })
 })*/
-
 //connections
 mongoose.connect(DB).then(()=>{
     console.log('connection successful');
