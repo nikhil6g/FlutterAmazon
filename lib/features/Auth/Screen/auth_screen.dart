@@ -1,7 +1,9 @@
 import 'package:amazon_clone/common/widgets/custom_button.dart';
 import 'package:amazon_clone/common/widgets/custom_textfield.dart';
 import 'package:amazon_clone/constants/global_variables.dart';
+import 'package:amazon_clone/features/Auth/services/services.dart';
 import 'package:flutter/material.dart';
+
 
 enum Auth{
   signin,
@@ -23,12 +25,31 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _emailController= TextEditingController();
   final TextEditingController _passwordController= TextEditingController();
   final TextEditingController _nameController= TextEditingController();
+  final AuthService authService = AuthService();
+
   @override
   void dispose() {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _nameController.dispose();
+  }
+
+  void signUp(){
+    authService.signUpUser(
+      context: context, 
+      email: _emailController.text, 
+      password: _passwordController.text, 
+      name: _nameController.text
+    );
+  }
+
+  void signIn(){
+    authService.signInUser(
+      context: context, 
+      email: _emailController.text, 
+      password: _passwordController.text, 
+    );
   }
 
   @override
@@ -78,21 +99,28 @@ class _AuthScreenState extends State<AuthScreen> {
                         CustomTextField(
                           controller:_emailController,
                           hintText: 'Email',
+                          isPassword: false,
                         ),
-                        const SizedBox(height: 10,),
+                        const SizedBox(height: 15,),
                         CustomTextField(
                           controller:_nameController,
                           hintText: 'Name',
+                          isPassword: false,
                         ),
-                        const SizedBox(height: 10,),
+                        const SizedBox(height: 15,),
                         CustomTextField(
                           controller:_passwordController,
                           hintText: 'password',
+                          isPassword: true,
                         ),
-                        const SizedBox(height: 10,),
+                        const SizedBox(height: 15,),
                         CustomButton(
                           text: 'Sign Up', 
-                          onTap: (){},
+                          onTap: (){
+                            if(_signUpFormKey.currentState!.validate()){
+                              signUp();
+                            }
+                          },
                         )
                       ],
                     )
@@ -122,22 +150,28 @@ class _AuthScreenState extends State<AuthScreen> {
                   padding:const EdgeInsets.all(8),
                   color: GlobalVariables.backgroundColor,
                   child: Form(
-                    key:_signUpFormKey,
+                    key:_signInFormKey,
                     child: Column(
                       children: [
                         CustomTextField(
                           controller:_emailController,
                           hintText: 'Email',
+                          isPassword: false,
                         ),
-                        const SizedBox(height: 10,),
+                        const SizedBox(height: 15,),
                         CustomTextField(
                           controller:_passwordController,
                           hintText: 'password',
+                          isPassword: true,
                         ),
-                        const SizedBox(height: 10,),
+                        const SizedBox(height: 15,),
                         CustomButton(
                           text: 'Sign In', 
-                          onTap: (){},
+                          onTap: (){
+                            if(_signInFormKey.currentState!.validate()){
+                              signIn();
+                            }
+                          },
                         )
                       ],
                     )
