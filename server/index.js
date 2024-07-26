@@ -2,7 +2,8 @@
 const express = require('express'); //similar to dart package import
 const mongoose = require('mongoose')
 //Import from another files
-const authRouter= require('./routes/auth')
+const authRouter= require('./routes/auth');
+const adminRoute = require('./routes/admin');
 
 //INIT
 const PORT = 3000;
@@ -13,7 +14,7 @@ const DB="mongodb+srv://nikhil6g:Nikhilra12nu()@cluster0.fofahkz.mongodb.net/?re
 //middleware
 app.use(express.json())
 app.use(authRouter);
-
+app.use(adminRoute)
 //Creating ans api
 // GET, PUT, POST, DELETE, UPDATE -> CRUD
 
