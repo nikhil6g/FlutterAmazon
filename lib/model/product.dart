@@ -36,7 +36,7 @@ class Product{
       name: map['name'] ?? '',
       description: map['description'] ?? '',
       quantity: map['quantity']?.toDouble() ?? 0.0,
-      imageUrls: List<String>.from(map['images']),
+      imageUrls: List<String>.from(map['imageUrls']),
       category: map['category'] ?? '',
       price: map['price']?.toDouble() ?? 0.0,
       id: map['_id'],

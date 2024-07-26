@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:amazon_clone/constants/error_handling.dart';
@@ -71,6 +72,69 @@ class AdminServices {
         }
       );
     }catch(e){
+      showSnackBar(context, e.toString());
+    }
+  }
+
+  //get all the products
+  Future<List<Product>> fetchAllProducts(
+    BuildContext context
+  ) async {
+    final userProvider = Provider.of<UserProvider>(context,listen: false);
+    List<Product> productList = [];
+    try{
+      http.Response res = await http.get(
+        Uri.parse('$uri/admin/get-products'),
+        headers: <String,String>{
+          'Content-Type' : 'application/json; charset=UTF-8',   //this header part is used for as we using a middleware in index.js
+          'x-auth-token' :  userProvider.user.token             //file named express.json()
+        }
+      );
+
+      httpErrorHandle(
+        response: res, 
+        context: context, 
+        onSuccess: (){
+          for(int j=0;j<jsonDecode(res.body).length;j++){
+            productList.add(
+              Product.fromJson(jsonEncode((jsonDecode(res.body))[j])) //as jsonDecode give object not string , that's why use jsonEncode
+            );
+          }
+        }
+      );
+    }catch(e){
+      debugPrint(e.toString());
+      showSnackBar(context, e.toString());
+    }
+    return productList;
+  }
+
+  //for deleteing a product
+  void deleteProduct({
+    required BuildContext context,
+    required Product product,
+    required VoidCallback onSuccess,
+  }) async {
+    final userProvider = Provider.of<UserProvider>(context,listen: false);
+    try{
+      http.Response res = await http.post(
+        Uri.parse('$uri/admin/delete-product'),
+        body : jsonEncode({'id' : product.id}) ,
+        headers: <String,String>{
+          'Content-Type' : 'application/json; charset=UTF-8',   //this header part is used for as we using a middleware in index.js
+          'x-auth-token' :  userProvider.user.token             //file named express.json()
+        },
+      );
+
+      httpErrorHandle(
+        response: res, 
+        context: context, 
+        onSuccess: (){
+          onSuccess();
+        }
+      );
+    }catch(e){
+      debugPrint(e.toString());
       showSnackBar(context, e.toString());
     }
   }

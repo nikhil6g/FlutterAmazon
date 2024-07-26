@@ -1,4 +1,8 @@
+import 'package:amazon_clone/common/widgets/loader.dart';
+import 'package:amazon_clone/features/account/widget/single_product.dart';
 import 'package:amazon_clone/features/admin/screens/add_product_screen.dart';
+import 'package:amazon_clone/features/admin/services/admin_services.dart';
+import 'package:amazon_clone/model/product.dart';
 import 'package:flutter/material.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -9,6 +13,33 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen> {
+  final adminServices = AdminServices();
+  List<Product>? productList;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAllProducts(context); //as initState can't be declared as async so we create a new function is added
+  }
+
+  fetchAllProducts(BuildContext context) async {
+    productList = await adminServices.fetchAllProducts(context);
+    setState(() {
+    });
+  }
+
+  void deleteProduct(Product product,int index) {
+    adminServices.deleteProduct(
+      context: context, 
+      product: product, 
+      onSuccess: (){
+        productList!.removeAt(index);
+        setState(() {
+          
+        });
+      }
+    );
+  }
 
   void navigateToVoidAddProduct(){
     Navigator.pushNamed(context, AddProductScreen.routeName);
@@ -16,9 +47,63 @@ class _ProductScreenState extends State<ProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body:const Center(
-        child: Text('product'),
+    return productList == null ?  
+    const Loader()
+    :
+    Scaffold(
+      body: productList!.isEmpty ?
+      const Center(
+        child: Text(
+          'No product to sell..\n Please add some',
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+      )
+      :
+      GridView.builder(
+        itemCount: productList!.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+        ), 
+        itemBuilder: (context,index){
+          Product productData = productList![index];
+          return Padding(
+            padding: const EdgeInsets.only(top:8.0),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 140,
+                  child: SingleProduct(image: productData.imageUrls[0])
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4 ),
+                  child: Row(
+                    
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          productData.name,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                      ),
+                      //delete button
+                      IconButton(
+                        onPressed: () {
+                          deleteProduct(productData,index);
+                        }, 
+                        icon:const Icon(Icons.delete_outlined)
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        }
       ),
       floatingActionButton: FloatingActionButton(
         tooltip:  'Add a product',
