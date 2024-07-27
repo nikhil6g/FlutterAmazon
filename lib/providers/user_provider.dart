@@ -9,7 +9,8 @@ class UserProvider extends ChangeNotifier{
     password: '', 
     address: '', 
     type: '', 
-    token: ''
+    token: '',
+    cart: []
   );
 
   User get user => _user; //getter
@@ -19,4 +20,8 @@ class UserProvider extends ChangeNotifier{
     notifyListeners();
   }
 
+  void setUserFromModel(User user){
+    _user = user;
+    notifyListeners();
+  }
 }

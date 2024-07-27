@@ -44,4 +44,41 @@ class HomeServices{
     }
     return productList;
   }
+
+  //getting deal of the day product
+  Future<Product> fetchDealOfDay({
+    required BuildContext context,
+  }) async {
+    final userProvider = Provider.of<UserProvider>(context,listen: false);
+    Product product = Product(
+      name: '', 
+      description: '', 
+      quantity: 0, 
+      price: 0, 
+      imageUrls: [], 
+      category: ''
+    );
+
+    try{
+      http.Response res = await http.get(
+        Uri.parse('$uri/api/deal-of-day'),
+        headers: <String,String>{
+          'Content-Type' : 'application/json; charset=UTF-8',   //this header part is used for as we using a middleware in index.js
+          'x-auth-token' :  userProvider.user.token             //file named express.json()
+        }
+      );
+
+      httpErrorHandle(
+        response: res, 
+        context: context, 
+        onSuccess: (){
+          product = Product.fromJson(res.body);
+        }
+      );
+    }catch(e){
+      debugPrint(e.toString());
+      showSnackBar(context, e.toString());
+    }
+    return product;
+  }
 }
