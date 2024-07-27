@@ -27,4 +27,32 @@ productRouter.get('/api/products/search/:name',auth,async (req,res)=>{
     }
 })
 
+//create a post request route to rate the product
+productRouter.post('/api/rate-product',auth,async(req,res)=>{
+    try{
+        const { id , rating } = req.body
+        let product = await Product.findById(id)
+
+        //checking for matching userid in ratings and delete this
+        for(let j=0;j<product.ratings.length;j++){ //here product.ratings is an array
+            if(product.ratings[j].userId==req.userId){ //here userId of client is given in auth middleware
+                product.ratings.splice(j,1) //here splice is just delete the rating given by client previously
+                break
+            }
+        }
+
+        const ratingScema = {
+            userId : req.userId,
+            rating
+        }
+        product.ratings.push(ratingScema)
+        product = await product.save()
+
+        res.json(product)
+    }catch(e){
+        res.status(500).json({err : e.message})
+    }
+})
+
+
 module.exports = productRouter

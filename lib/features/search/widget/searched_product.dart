@@ -1,13 +1,28 @@
 import 'package:amazon_clone/common/widgets/stars.dart';
 import 'package:amazon_clone/model/product.dart';
+import 'package:amazon_clone/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SearchedProduct extends StatelessWidget {
   final Product product;
   const SearchedProduct({super.key,required this.product});
-
   @override
   Widget build(BuildContext context) {
+
+    
+    double averageRating=0;
+    double totalRating=0;
+    for(int i=0;i<product.ratings!.length;i++){
+      totalRating+=product.ratings![i].rating;
+      if(product.ratings![i].userId==Provider.of<UserProvider>(context,listen: false).user.id){
+      }
+    }
+    if(totalRating!=0){
+      averageRating=totalRating/product.ratings!.length;
+    }
+
+
     return Column(
       children: [
         Container(
@@ -16,7 +31,7 @@ class SearchedProduct extends StatelessWidget {
             children: [
               Image.network(
                 product.imageUrls[0],
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.contain,
                 height: 135,
                 width: 135,
               ),
@@ -37,7 +52,7 @@ class SearchedProduct extends StatelessWidget {
                     width: 290,
                     height: 30,
                     padding: const EdgeInsets.only(left : 10, top: 5),
-                    child: Stars(rating: 4)
+                    child: Stars(rating: averageRating)
                   ),
                   Container(
                     width: 290,
