@@ -2,10 +2,10 @@ const express = require('express');
 const admin = require('../middlewares/admin');
 const Product = require('../models/product');
 
-const adminRoute = express.Router()
+const adminRouter = express.Router()
 
 //Add Product
-adminRoute.post('/admin/add-product',admin,async (req,res) => {
+adminRouter.post('/admin/add-product',admin,async (req,res) => {
     try{
         const {name, description, imageUrls, quantity, price, category} = req.body
         let product = new Product({
@@ -25,7 +25,7 @@ adminRoute.post('/admin/add-product',admin,async (req,res) => {
 
 
 //get all the products
-adminRoute.get('/admin/get-products',admin,async (req,res)=>{
+adminRouter.get('/admin/get-products',admin,async (req,res)=>{
     try{
         const products = await Product.find({})
         res.json(products)
@@ -35,7 +35,7 @@ adminRoute.get('/admin/get-products',admin,async (req,res)=>{
 })
 
 //delete product
-adminRoute.post('/admin/delete-product',admin,async (req,res) =>{
+adminRouter.post('/admin/delete-product',admin,async (req,res) =>{
     try{
         const {id} = req.body
 
@@ -47,4 +47,4 @@ adminRoute.post('/admin/delete-product',admin,async (req,res) =>{
     }
 })
 
-module.exports = adminRoute
+module.exports = adminRouter

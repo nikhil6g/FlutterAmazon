@@ -22,6 +22,7 @@ class AdminServices {
     required double quantity,
     required String category,
     required List<File> images, 
+    required VoidCallback onSuccess
   }) async{
     try{
       //because we are in shared cluster on mongodb so we can store only 512 mb data
@@ -67,8 +68,7 @@ class AdminServices {
         response: res, 
         context: context, 
         onSuccess: (){
-          showSnackBar(context, 'Product added successfully');
-          Navigator.pop(context);
+          onSuccess();
         }
       );
     }catch(e){
