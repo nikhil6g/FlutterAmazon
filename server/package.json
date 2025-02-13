@@ -11,7 +11,11 @@
   "description": "",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.19.2",
+    "express-async-handler": "^1.2.0",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.1"
