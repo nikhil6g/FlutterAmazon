@@ -16,31 +16,29 @@ class AddressServices {
   void saveUserAddress({
     required BuildContext context,
     required String address,
-  }) async{
-    try{
+  }) async {
+    try {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
-      http.Response res = await http.post(
-        Uri.parse('$uri/api/save-user-address'),
-        headers: <String,String>{
-          'Content-Type' : 'application/json; charset=UTF-8',   //this header part is used for as we using a middleware in index.js
-          'x-auth-token' :  userProvider.user.token             //file named express.json()
-        },
-        body: jsonEncode({
-          'address': address
-        })
-      );
+      http.Response res =
+          await http.post(Uri.parse('$uri/api/save-user-address'),
+              headers: <String, String>{
+                'Content-Type':
+                    'application/json; charset=UTF-8', //this header part is used for as we using a middleware in index.js
+                'x-auth-token':
+                    userProvider.user.token //file named express.json()
+              },
+              body: jsonEncode({'address': address}));
 
       httpErrorHandle(
-        response: res, 
-        context: context, 
-        onSuccess: (){
-          User user = userProvider.user.copyWith(
-            address: jsonDecode(res.body)['address'],
-          );
-          userProvider.setUserFromModel(user);
-        }
-      );
-    }catch(e){
+          response: res,
+          context: context,
+          onSuccess: () {
+            User user = userProvider.user.copyWith(
+              address: jsonDecode(res.body)['address'],
+            );
+            userProvider.setUserFromModel(user);
+          });
+    } catch (e) {
       showSnackBar(context, e.toString());
     }
   }
@@ -51,33 +49,28 @@ class AddressServices {
     required String address,
     required double totalAmount,
   }) async {
-    final userProvider = Provider.of<UserProvider>(context,listen: false);
-    try{
-      http.Response res = await http.post(
-        Uri.parse('$uri/api/order'),
-        headers: <String,String>{
-          'Content-Type' : 'application/json; charset=UTF-8',   //this header part is used for as we using a middleware in index.js
-          'x-auth-token' :  userProvider.user.token             //file named express.json()
-        },
-        body: jsonEncode({
-          'cart': userProvider.user.cart,
-          'totalPrice': totalAmount,
-          'address': address,
-        })
-      );
-
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    try {
+      http.Response res = await http.post(Uri.parse('$uri/api/order'),
+          headers: <String, String>{
+            'Content-Type':
+                'application/json; charset=UTF-8', //this header part is used for as we using a middleware in index.js
+            'x-auth-token': userProvider.user.token //file named express.json()
+          },
+          body: jsonEncode({
+            'cart': userProvider.user.cart,
+            'totalPrice': totalAmount,
+            'address': address,
+          }));
       httpErrorHandle(
-        response: res, 
-        context: context, 
-        onSuccess: (){
-          showSnackBar(context, 'your order has been placed');
-          User user = userProvider.user.copyWith(
-            cart: []
-          );
-          userProvider.setUserFromModel(user);
-        }
-      );
-    }catch(e){
+          response: res,
+          context: context,
+          onSuccess: () {
+            showSnackBar(context, 'your order has been placed');
+            User user = userProvider.user.copyWith(cart: []);
+            userProvider.setUserFromModel(user);
+          });
+    } catch (e) {
       debugPrint(e.toString());
       showSnackBar(context, e.toString());
     }

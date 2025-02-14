@@ -86,15 +86,14 @@ const orderProduct = asyncHandler(async (req, res) => {
     const { cart, totalPrice, address } = req.body;
 
     for (let i = 0; i < cart.length; i++) {
-      let product = await Product.findById(cart[i].product.id);
+      let product = await Product.findById(cart[i].product._id);
       if (product.quantity < cart[i].quantity) {
         return res.status(400).json({ msg: `${product.name} is out of stock` });
       }
     }
-
     let products = [];
     for (let i = 0; i < cart.length; i++) {
-      let product = await Product.findById(cart[i].product.id);
+      let product = await Product.findById(cart[i].product._id);
       product.quantity -= cart[i].quantity;
       products.push({ product, quantity: cart[i].quantity });
       await product.save();
@@ -109,12 +108,13 @@ const orderProduct = asyncHandler(async (req, res) => {
       totalPrice,
       address,
       userId: req.userId,
-      orderAt: new Date().getMilliseconds(),
+      orderAt: new Date().getTime(),
     });
 
     order = await order.save();
     res.json(order);
   } catch (e) {
+    console.log(e.message);
     res.status(500).json({ err: e.message });
   }
 });

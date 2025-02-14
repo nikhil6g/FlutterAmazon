@@ -5,77 +5,86 @@ import 'package:amazon_clone/features/admin/screens/add_product_screen.dart';
 import 'package:amazon_clone/features/admin/screens/admin_screen.dart';
 import 'package:amazon_clone/features/home/screen/category_deals_screen.dart';
 import 'package:amazon_clone/features/home/screen/home_screen.dart';
+import 'package:amazon_clone/features/order_details/screen/order_details.dart';
 import 'package:amazon_clone/features/product_details/screens/product_details_screen.dart';
 import 'package:amazon_clone/features/search/screens/search_screen.dart';
+import 'package:amazon_clone/model/order.dart';
 import 'package:amazon_clone/model/product.dart';
 import 'package:flutter/material.dart';
 
-Route<dynamic> generateRoute(RouteSettings routeSettings){
-  switch(routeSettings.name){
-    case AuthScreen.routeName : 
+Route<dynamic> generateRoute(RouteSettings routeSettings) {
+  switch (routeSettings.name) {
+    case AuthScreen.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_)=> const AuthScreen(),
+        builder: (_) => const AuthScreen(),
       );
-    case BottomBar.routeName :
+    case BottomBar.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_)=> const BottomBar(),
+        builder: (_) => const BottomBar(),
       );
-    case AdminScreen.routeName :
+    case AdminScreen.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_)=> const AdminScreen(),
+        builder: (_) => const AdminScreen(),
       );
-    case HomeScreen.routeName : 
+    case HomeScreen.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_)=> const HomeScreen(),
+        builder: (_) => const HomeScreen(),
       );
-    case AddProductScreen.routeName : 
+    case AddProductScreen.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_)=> const AddProductScreen(),
+        builder: (_) => const AddProductScreen(),
       );
-    case AddressScreen.routeName : 
+    case AddressScreen.routeName:
       var totalAmount = routeSettings.arguments as String;
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_)=> AddressScreen(
+        builder: (_) => AddressScreen(
           totalAmount: totalAmount,
         ),
       );
-    case ProductDetailsScreen.routeName : 
+    case OrderDetailScreen.routeName:
+      var order = routeSettings.arguments as Order;
+      return MaterialPageRoute(
+        settings: routeSettings,
+        builder: (_) => OrderDetailScreen(
+          order: order,
+        ),
+      );
+    case ProductDetailsScreen.routeName:
       var product = routeSettings.arguments as Product;
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_)=> ProductDetailsScreen(
+        builder: (_) => ProductDetailsScreen(
           product: product,
         ),
       );
-    case CategoryDealsScreen.routeName : 
+    case CategoryDealsScreen.routeName:
       var category = routeSettings.arguments as String; //
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_)=> CategoryDealsScreen(
+        builder: (_) => CategoryDealsScreen(
           category: category,
         ),
       );
-    case SearchScreen.routeName : 
+    case SearchScreen.routeName:
       var searchQuery = routeSettings.arguments as String;
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_)=> SearchScreen(
+        builder: (_) => SearchScreen(
           searchQuery: searchQuery,
         ),
       );
-    default : 
+    default:
       return MaterialPageRoute(
-        builder: (_) => const Scaffold(
-          body: Center(
-            child: Text('Screen does not exist'),
-          ),
-        )
-      );
+          builder: (_) => const Scaffold(
+                body: Center(
+                  child: Text('Screen does not exist'),
+                ),
+              ));
   }
 }
