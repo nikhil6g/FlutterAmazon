@@ -1,4 +1,5 @@
 import 'package:amazon_clone/constants/global_variables.dart';
+import 'package:amazon_clone/features/admin/screens/orders_screen.dart';
 import 'package:amazon_clone/features/admin/screens/product_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -11,19 +12,18 @@ class AdminScreen extends StatefulWidget {
 }
 
 class _AdminScreenState extends State<AdminScreen> {
-
-  int _page=0;
+  int _page = 0;
   double bottomBarWidth = 42;
-  double bottomBarBorderWidth =5;
-  List<Widget> pages =[
+  double bottomBarBorderWidth = 5;
+  List<Widget> pages = [
     const ProductScreen(),
     const Center(child: Text('Analytics Page')),
-    const Center(child: Text('Cart Page')),
+    const OrdersScreen(),
   ];
 
-  void updatePage(int page){
+  void updatePage(int page) {
     setState(() {
-      _page=page;
+      _page = page;
     });
   }
 
@@ -31,12 +31,11 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50), 
+        preferredSize: const Size.fromHeight(50),
         child: AppBar(
           flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: GlobalVariables.appBarGradient
-            ),
+            decoration:
+                const BoxDecoration(gradient: GlobalVariables.appBarGradient),
           ),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -52,10 +51,8 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
               const Text(
                 'Admin',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black
-                ),
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
               )
             ],
           ),
@@ -63,63 +60,59 @@ class _AdminScreenState extends State<AdminScreen> {
       ),
       body: pages[_page],
       bottomNavigationBar: BottomNavigationBar(
-        onTap: updatePage,
-        currentIndex: _page,
-        selectedItemColor: GlobalVariables.selectedNavBarColor,
-        unselectedItemColor: GlobalVariables.unselectedNavBarColor,
-        backgroundColor: GlobalVariables.backgroundColor,
-        iconSize: 28,
-        items:[
-          //Posts page
-          BottomNavigationBarItem(
-            icon: Container(
-              width: bottomBarWidth,
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: _page ==0 ? GlobalVariables.selectedNavBarColor: GlobalVariables.backgroundColor,
+          onTap: updatePage,
+          currentIndex: _page,
+          selectedItemColor: GlobalVariables.selectedNavBarColor,
+          unselectedItemColor: GlobalVariables.unselectedNavBarColor,
+          backgroundColor: GlobalVariables.backgroundColor,
+          iconSize: 28,
+          items: [
+            //Posts page
+            BottomNavigationBarItem(
+                icon: Container(
+                  width: bottomBarWidth,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(
+                    color: _page == 0
+                        ? GlobalVariables.selectedNavBarColor
+                        : GlobalVariables.backgroundColor,
                     width: bottomBarBorderWidth,
-                  )
-                )
-              ),
-              child: const Icon(Icons.home_outlined),
-            ),
-            label: ''
-          ),
-          //Analytics
-          BottomNavigationBarItem(
-            icon: Container(
-              width: bottomBarWidth,
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: _page == 1 ? GlobalVariables.selectedNavBarColor: GlobalVariables.backgroundColor,
+                  ))),
+                  child: const Icon(Icons.home_outlined),
+                ),
+                label: ''),
+            //Analytics
+            BottomNavigationBarItem(
+                icon: Container(
+                  width: bottomBarWidth,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(
+                    color: _page == 1
+                        ? GlobalVariables.selectedNavBarColor
+                        : GlobalVariables.backgroundColor,
                     width: bottomBarBorderWidth,
-                  )
-                )
-              ),
-              child: const Icon(Icons.analytics_outlined),
-            ),
-            label: ''
-          ),
-          //for orders
-          BottomNavigationBarItem(
-            icon: Container(
-              width: bottomBarWidth,
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: _page == 2 ? GlobalVariables.selectedNavBarColor: GlobalVariables.backgroundColor,
+                  ))),
+                  child: const Icon(Icons.analytics_outlined),
+                ),
+                label: ''),
+            //for orders
+            BottomNavigationBarItem(
+                icon: Container(
+                  width: bottomBarWidth,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(
+                    color: _page == 2
+                        ? GlobalVariables.selectedNavBarColor
+                        : GlobalVariables.backgroundColor,
                     width: bottomBarBorderWidth,
-                  )
-                )
-              ),
-              child: const Icon(Icons.all_inbox_outlined),
-            ),
-            label: ''
-          ),
-        ]
-      ),
+                  ))),
+                  child: const Icon(Icons.all_inbox_outlined),
+                ),
+                label: ''),
+          ]),
     );
   }
 }

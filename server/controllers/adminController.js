@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const { Product } = require("../models/product");
+const Order = require("../models/order");
 
 //@description     Add Product
 //@route           POST /admin/add-product
@@ -50,4 +51,37 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { addProduct, fetchProducts, deleteProduct };
+//@description     Get all the orders
+//@route           Get /admin/get-orders
+//@access          Protected
+const fetchOrders = asyncHandler(async (req, res) => {
+  try {
+    const orders = await Order.find({});
+    res.json(orders);
+  } catch (e) {
+    res.status(500).json({ err: e.message });
+  }
+});
+
+//@description     update the order status
+//@route           POST /admin/change-order-status
+//@access          Protected
+const changeOrderStatus = asyncHandler(async (req, res) => {
+  try {
+    const { id, status } = req.body;
+    let order = await Order.findById(id);
+    order.status = status;
+    order = await order.save();
+    res.json(order);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+module.exports = {
+  addProduct,
+  fetchProducts,
+  deleteProduct,
+  fetchOrders,
+  changeOrderStatus,
+};
