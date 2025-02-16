@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:amazon_clone/constants/error_handling.dart';
 import 'package:amazon_clone/constants/global_variables.dart';
 import 'package:amazon_clone/constants/utils.dart';
+import 'package:amazon_clone/features/admin/models/sales.dart';
 import 'package:amazon_clone/model/order.dart';
 import 'package:amazon_clone/model/product.dart';
 import 'package:amazon_clone/providers/user_provider.dart';
@@ -204,5 +205,60 @@ class AdminServices {
       debugPrint(e.toString());
       showSnackBar(context, e.toString());
     }
+  }
+
+  Future<Map<String, dynamic>> getEarnings(BuildContext context) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    List<SalesBase> salesEarning = [];
+    List<SalesBase> salesCount = [];
+    int totalEarning = 0;
+    int totalSellingCount = 0;
+    try {
+      http.Response res = await http.get(
+        Uri.parse('$uri/admin/analytics'),
+        headers: <String, String>{
+          'Content-Type':
+              'application/json; charset=UTF-8', //this header part is used for as we using a middleware in index.js
+          'x-auth-token': userProvider.user.token //file named express.json()
+        },
+      );
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          var response = jsonDecode(res.body);
+          totalEarning = response['totalEarnings'];
+          totalSellingCount = response['totalSellingCount'];
+          var categoryData = response['categoryData'];
+          salesEarning = [
+            SalesEarning("Mobiles", categoryData['Mobiles']['earnings']),
+            SalesEarning("Essentials", categoryData['Essentials']['earnings']),
+            SalesEarning("Appliances", categoryData['Appliances']['earnings']),
+            SalesEarning("Books", categoryData['Books']['earnings']),
+            SalesEarning("Fashion", categoryData['Fashion']['earnings']),
+          ];
+          salesCount = [
+            SalesCount("Mobiles", categoryData['Mobiles']['sellingCount']),
+            SalesCount(
+                "Essentials", categoryData['Essentials']['sellingCount']),
+            SalesCount(
+                "Appliances", categoryData['Appliances']['sellingCount']),
+            SalesCount("Books", categoryData['Books']['sellingCount']),
+            SalesCount("Fashion", categoryData['Fashion']['sellingCount']),
+          ];
+        },
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+      showSnackBar(context, e.toString());
+    }
+
+    return {
+      'salesCount': salesCount,
+      'salesEarning': salesEarning,
+      'totalEarning': totalEarning,
+      'totalSellingCount': totalSellingCount,
+    };
   }
 }

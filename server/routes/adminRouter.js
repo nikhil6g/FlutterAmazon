@@ -6,6 +6,7 @@ const {
   deleteProduct,
   fetchOrders,
   changeOrderStatus,
+  getAnalytics,
 } = require("../controllers/adminController");
 
 const adminRouter = express.Router();
@@ -15,5 +16,6 @@ adminRouter.get("/admin/get-products", admin, fetchProducts);
 adminRouter.post("/admin/delete-product", admin, deleteProduct);
 adminRouter.get("/admin/get-orders", admin, fetchOrders);
 adminRouter.post("/admin/change-order-status", admin, changeOrderStatus);
+adminRouter.get("/admin/analytics", admin, getAnalytics);
 
 module.exports = adminRouter;

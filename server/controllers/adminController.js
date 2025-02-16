@@ -78,10 +78,72 @@ const changeOrderStatus = asyncHandler(async (req, res) => {
   }
 });
 
+//@description     get the total earnings and category wise earning
+//@route           GET /admin/analytics
+//@access          Protected
+const getAnalytics = asyncHandler(async (req, res) => {
+  try {
+    const orders = await Order.find({});
+    let totalEarnings = 0;
+    let totalSellingCount = 0;
+    for (let order of orders) {
+      for (let product of order.products) {
+        totalEarnings += product.quantity * product.product.price;
+        totalSellingCount += product.quantity;
+      }
+    }
+
+    //Category wise order fetching
+    let categories = [
+      "Mobiles",
+      "Essentials",
+      "Appliances",
+      "Books",
+      "Fashion",
+    ];
+    let categoryData = {};
+
+    for (let category of categories) {
+      categoryData[category] = await fetchCategoryWiseProducts(category);
+    }
+
+    let earnings = {
+      totalEarnings,
+      totalSellingCount,
+      categoryData,
+    };
+
+    res.json(earnings);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+async function fetchCategoryWiseProducts(category) {
+  let earnings = 0;
+  let sellingCount = 0;
+
+  let categoryOrders = await Order.find({
+    "products.product.category": category,
+  });
+
+  for (let order of categoryOrders) {
+    for (let product of order.products) {
+      if (product.product.category === category) {
+        earnings += product.quantity * product.product.price;
+        sellingCount += product.quantity;
+      }
+    }
+  }
+
+  return { earnings, sellingCount };
+}
+
 module.exports = {
   addProduct,
   fetchProducts,
   deleteProduct,
   fetchOrders,
   changeOrderStatus,
+  getAnalytics,
 };
