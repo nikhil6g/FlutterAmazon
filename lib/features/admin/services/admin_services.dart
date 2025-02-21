@@ -139,6 +139,35 @@ class AdminServices {
     }
   }
 
+  //update product details
+  void updateProductDetails(
+      {required BuildContext context,
+      required Product updatedProduct,
+      required VoidCallback onSuccess}) async {
+    try {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+      http.Response res = await http.post(
+          Uri.parse('$uri/admin/update-product-details'),
+          body: updatedProduct.toJson(),
+          headers: <String, String>{
+            'Content-Type':
+                'application/json; charset=UTF-8', //this header part is used for as we using a middleware in index.js
+            'x-auth-token': userProvider.user.token //file named express.json()
+          });
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          onSuccess();
+        },
+      );
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+  }
+
   //for getting all orders
   Future<List<Order>> fetchAllOrders(BuildContext context) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);

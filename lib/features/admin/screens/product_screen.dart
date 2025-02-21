@@ -2,6 +2,7 @@ import 'package:amazon_clone/common/widgets/loader.dart';
 import 'package:amazon_clone/features/account/widget/single_product.dart';
 import 'package:amazon_clone/features/admin/screens/add_product_screen.dart';
 import 'package:amazon_clone/features/admin/services/admin_services.dart';
+import 'package:amazon_clone/features/product_details/screens/product_details_screen.dart';
 import 'package:amazon_clone/model/product.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,14 @@ class ProductScreen extends StatefulWidget {
 class _ProductScreenState extends State<ProductScreen> {
   final adminServices = AdminServices();
   List<Product>? productList;
+
+  void navigateToPrdouctDetailsPage(BuildContext context, Product product) {
+    Navigator.pushNamed(
+      context,
+      ProductDetailsScreen.routeName,
+      arguments: product,
+    );
+  }
 
   @override
   void initState() {
@@ -65,39 +74,44 @@ class _ProductScreenState extends State<ProductScreen> {
                       Product productData = productList![index];
                       return Padding(
                         padding: const EdgeInsets.only(top: 8.0),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 122,
-                              child: SingleProduct(
-                                image: productData.imageUrls[0],
+                        child: GestureDetector(
+                          onTap: () => {
+                            navigateToPrdouctDetailsPage(context, productData)
+                          },
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 122,
+                                child: SingleProduct(
+                                  image: productData.imageUrls[0],
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 4),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      productData.name,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        productData.name,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                      ),
                                     ),
-                                  ),
-                                  //delete button
-                                  IconButton(
-                                    onPressed: () {
-                                      deleteProduct(productData, index);
-                                    },
-                                    icon: const Icon(Icons.delete_outlined),
-                                  ),
-                                ],
+                                    //delete button
+                                    IconButton(
+                                      onPressed: () {
+                                        deleteProduct(productData, index);
+                                      },
+                                      icon: const Icon(Icons.delete_outlined),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },

@@ -51,6 +51,32 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
+//@description     Update product details
+//@route           POST /admin/update-product-details
+//@access          Protected
+const updateProductDetails = asyncHandler(async (req, res) => {
+  try {
+    const { name, description, imageUrls, quantity, price, category, id } =
+      req.body;
+    let oldProductDetails = await Product.findById(id);
+    if (!oldProductDetails) {
+      res.status(404).json({ err: "Product not found" });
+    }
+
+    oldProductDetails.name = name;
+    oldProductDetails.description = description;
+    oldProductDetails.imageUrls = imageUrls;
+    oldProductDetails.quantity = quantity;
+    oldProductDetails.price = price;
+    oldProductDetails.category = category;
+
+    await oldProductDetails.save();
+    res.status(200).json(oldProductDetails);
+  } catch (e) {
+    res.status(500).json({ err: e.message });
+  }
+});
+
 //@description     Get all the orders
 //@route           Get /admin/get-orders
 //@access          Protected
@@ -143,6 +169,7 @@ module.exports = {
   addProduct,
   fetchProducts,
   deleteProduct,
+  updateProductDetails,
   fetchOrders,
   changeOrderStatus,
   getAnalytics,
