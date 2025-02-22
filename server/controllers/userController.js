@@ -2,6 +2,8 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/user");
 const { Product } = require("../models/product");
 const Order = require("../models/order");
+const { sendEmailWithReceipt } = require("../utils/email");
+const { generateReceiptPDF } = require("../utils/pdf");
 
 //@description     Adding product to cart
 //@route           POST /api/add-to-cart
@@ -112,6 +114,10 @@ const orderProduct = asyncHandler(async (req, res) => {
     });
 
     order = await order.save();
+
+    const pdfBuffer = await generateReceiptPDF(order, user);
+    await sendEmailWithReceipt(user.email, pdfBuffer);
+
     res.json(order);
   } catch (e) {
     console.log(e.message);

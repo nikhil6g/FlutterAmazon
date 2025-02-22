@@ -44,3 +44,5 @@ app.*.map.json
 
 #server environmental variables
 /server/.env
+
+/server/node_modules
