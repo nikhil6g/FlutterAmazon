@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const { Product } = require("../models/product");
 const Order = require("../models/order");
+const admin = require("../config/firebaseAdmin");
+const { redisClient } = require("../config/redis");
 
 //@description     Add Product
 //@route           POST /admin/add-product
@@ -63,6 +65,8 @@ const updateProductDetails = asyncHandler(async (req, res) => {
       res.status(404).json({ err: "Product not found" });
     }
 
+    const wasOutOfStock = oldProductDetails.quantity === 0;
+
     oldProductDetails.name = name;
     oldProductDetails.description = description;
     oldProductDetails.imageUrls = imageUrls;
@@ -71,6 +75,14 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     oldProductDetails.category = category;
 
     await oldProductDetails.save();
+
+    if (wasOutOfStock && quantity > 0) {
+      await redisClient.publish(
+        "product_notifications",
+        JSON.stringify({ productId: id, productName: name })
+      ); //here I do not use await because of any error in this function should not affect the response.
+    }
+
     res.status(200).json(oldProductDetails);
   } catch (e) {
     res.status(500).json({ err: e.message });

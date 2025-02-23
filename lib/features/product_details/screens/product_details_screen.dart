@@ -27,6 +27,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   double averageRating = 0;
   double myRating = 0;
   bool isEditing = false;
+  bool isSubscribedForNotification = false;
   late Product _currentProduct;
   TextEditingController nameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -55,6 +56,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     if (totalRating != 0) {
       averageRating = totalRating / _currentProduct.ratings!.length;
     }
+
+    if (_currentProduct.quantity == 0) {
+      checkSubscriptionForNotification();
+    }
+  }
+
+  void checkSubscriptionForNotification() async {
+    isSubscribedForNotification =
+        await productDetailsServices.checkInitialSubscriptionForNotifyMe(
+            context: context, productId: _currentProduct.id!);
+    setState(() {});
   }
 
   void navigateToSearchScreen(String query) {
@@ -106,6 +118,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       priceController.text = _currentProduct.price.toString();
       quantityController.text = _currentProduct.quantity.toString();
     });
+  }
+
+  void notifyMe() {
+    productDetailsServices.notifyMe(
+      context: context,
+      productId: _currentProduct.id!,
+      onSuccess: () {
+        setState(() {
+          isSubscribedForNotification = true;
+        });
+      },
+    );
   }
 
   @override
@@ -409,13 +433,24 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               )
             else
               _currentProduct.quantity == 0
-                  ? Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: CustomButton(
-                        text: 'Notify me when available',
-                        onTap: () {},
-                      ),
-                    )
+                  ? isSubscribedForNotification
+                      ? const Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Text(
+                            'You will be notified when this product is available',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color.fromARGB(255, 59, 92, 74),
+                            ),
+                          ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: CustomButton(
+                            text: 'Notify me when available',
+                            onTap: notifyMe,
+                          ),
+                        )
                   : Column(
                       children: [
                         Padding(

@@ -11,3 +11,7 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# Ignore Firebase config files
+/app/google-services.json
+ios/Runner/GoogleService-Info.plist

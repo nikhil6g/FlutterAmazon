@@ -4,6 +4,53 @@ const { Product } = require("../models/product");
 const Order = require("../models/order");
 const { sendEmailWithReceipt } = require("../utils/email");
 const { generateReceiptPDF } = require("../utils/pdf");
+const { redisClient } = require("../config/redis");
+
+//@description     Notfy me when product is available
+//@route           POST /api/notify-me
+//@access          Protected
+const notifyMe = asyncHandler(async (req, res) => {
+  const { userId, productId, fcmToken } = req.body;
+
+  if (!userId || !productId || !fcmToken) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+  try {
+    await redisClient.sadd(
+      `notifications:product:${productId}`,
+      JSON.stringify({ userId, fcmToken })
+    );
+
+    return res.json({ success: true, message: "Subscribed successfully!" });
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to subscribe" });
+  }
+});
+
+//@description     Check for user is already subscribed for notification or not
+//@route           GET /api/notifications/check-subscription?userId=${userId}&productId=${productId}
+//@access          Protected
+const checkSubscription = asyncHandler(async (req, res) => {
+  const { userId, productId } = req.query;
+
+  if (!userId || !productId) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    const subscribers = await redisClient.smembers(
+      `notifications:product:${productId}`
+    );
+    const isSubscribed = subscribers.some(
+      (subscriber) => JSON.parse(subscriber).userId === userId
+    );
+    return res.json({ subscribed: isSubscribed });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Failed to check subscription status" });
+  }
+});
 
 //@description     Adding product to cart
 //@route           POST /api/add-to-cart
@@ -138,6 +185,8 @@ const getAllOrders = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  notifyMe,
+  checkSubscription,
   addToCart,
   deleteFromCart,
   saveAddress,
