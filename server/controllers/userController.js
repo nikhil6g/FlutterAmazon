@@ -18,7 +18,7 @@ const notifyMe = asyncHandler(async (req, res) => {
   try {
     await redisClient.sadd(
       `notifications:product:${productId}`,
-      JSON.stringify({ userId, fcmToken })
+      JSON.stringify({ userId, fcmToken, isBanned: false })
     );
 
     return res.json({ success: true, message: "Subscribed successfully!" });

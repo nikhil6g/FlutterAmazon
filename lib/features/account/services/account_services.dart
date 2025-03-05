@@ -44,11 +44,18 @@ class AccountServices {
 
   void logOut(BuildContext context) async {
     try {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       await sharedPreferences.setString("x-auth-token", '');
       Navigator.pushNamedAndRemoveUntil(
           context, AuthScreen.routeName, (route) => false);
+
+      await http.post(Uri.parse('$uri/api/logout'), headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'x-auth-token': userProvider.user.token
+      });
     } catch (e) {
       debugPrint(e.toString());
       showSnackBar(context, e.toString());

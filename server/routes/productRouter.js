@@ -10,7 +10,7 @@ const {
 const productRouter = express.Router();
 
 productRouter.get("/api/products", auth, fetchCategoryWiseProduct);
-productRouter.get("/api/products/search/:name", auth, searchProduct);
+productRouter.get("/api/products/search", auth, searchProduct);
 productRouter.post("/api/rate-product", auth, rateProduct);
 productRouter.get("/api/deal-of-day", auth, findDealOfDay);
 

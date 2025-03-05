@@ -10,6 +10,10 @@ import 'package:amazon_clone/router.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+//In background notification taps, there's no widget context available. so that's why I need to use this as
+//navigatorKey.currentState?.pushNamed(...) lets you navigate without needing a widget context.
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -44,6 +48,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Amazon Clone',
       theme: ThemeData(

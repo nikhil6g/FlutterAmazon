@@ -11,40 +11,76 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
-
-class SearchServices{
-
+class SearchServices {
   //search products for given query
-  Future<List<Product>> fetchSearchedProduct({
-    required BuildContext context,
-    required String searchQuery
-  }) async{
-    final userProvider = Provider.of<UserProvider>(context,listen: false);
+  Future<List<Product>> fetchProductSearchedByQuery(
+      {required BuildContext context, required String searchQuery}) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     List<Product> productList = [];
-    try{
+    try {
       http.Response res = await http.get(
-        Uri.parse('$uri/api/products/search/$searchQuery'),
-        headers: <String,String>{
-          'Content-Type' : 'application/json; charset=UTF-8',   //this header part is used for as we using a middleware in index.js
-          'x-auth-token' :  userProvider.user.token             //file named express.json()
-        }
+        Uri.parse('$uri/api/products/search?searchQuery=$searchQuery'),
+        headers: <String, String>{
+          'Content-Type':
+              'application/json; charset=UTF-8', //this header part is used for as we using a middleware in index.js
+          'x-auth-token': userProvider.user.token //file named express.json()
+        },
       );
 
       httpErrorHandle(
-        response: res, 
-        context: context, 
-        onSuccess: (){
-          for(int j=0;j<jsonDecode(res.body).length;j++){
+        response: res,
+        context: context,
+        onSuccess: () {
+          for (int j = 0; j < jsonDecode(res.body).length; j++) {
             productList.add(
-              Product.fromJson(jsonEncode((jsonDecode(res.body))[j])) //as jsonDecode give object not string , that's why use jsonEncode
+              Product.fromJson(
+                jsonEncode(
+                  (jsonDecode(res.body))[j],
+                ),
+              ), //as jsonDecode give object not string , that's why use jsonEncode
             );
           }
-        }
+        },
       );
-    }catch(e){
+    } catch (e) {
       debugPrint(e.toString());
       showSnackBar(context, e.toString());
     }
     return productList;
+  }
+
+  //search product for given product id
+  Future<Product> fetchProductSearchedByID({
+    required BuildContext context,
+    required String productId,
+  }) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    Product? searchedProduct;
+    try {
+      http.Response res = await http.get(
+        Uri.parse('$uri/api/products/search?productId=$productId'),
+        headers: <String, String>{
+          'Content-Type':
+              'application/json; charset=UTF-8', //this header part is used for as we using a middleware in index.js
+          'x-auth-token': userProvider.user.token //file named express.json()
+        },
+      );
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          searchedProduct = Product.fromJson(
+            jsonEncode(
+              (jsonDecode(res.body)),
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+      showSnackBar(context, e.toString());
+    }
+    return searchedProduct!;
   }
 }

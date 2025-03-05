@@ -62,7 +62,7 @@ const updateProductDetails = asyncHandler(async (req, res) => {
       req.body;
     let oldProductDetails = await Product.findById(id);
     if (!oldProductDetails) {
-      res.status(404).json({ err: "Product not found" });
+      return res.status(404).json({ err: "Product not found" });
     }
 
     const wasOutOfStock = oldProductDetails.quantity === 0;
@@ -76,15 +76,20 @@ const updateProductDetails = asyncHandler(async (req, res) => {
 
     await oldProductDetails.save();
 
-    if (wasOutOfStock && quantity > 0) {
-      await redisClient.publish(
-        "product_notifications",
-        JSON.stringify({ productId: id, productName: name })
-      ); //here I do not use await because of any error in this function should not affect the response.
-    }
-
     res.status(200).json(oldProductDetails);
+
+    if (wasOutOfStock && quantity > 0) {
+      redisClient
+        .publish(
+          "product_notifications",
+          JSON.stringify({ productId: id, productName: name })
+        )
+        .catch((error) =>
+          console.error("Error publishing notification:", error)
+        ); //here I do not use await because of any error in this function should not affect the response.
+    }
   } catch (e) {
+    console.error(e.message);
     res.status(500).json({ err: e.message });
   }
 });

@@ -1,11 +1,16 @@
+import 'package:amazon_clone/features/product_details/screens/product_details_screen.dart';
+import 'package:amazon_clone/features/search/services/search_services.dart';
+import 'package:amazon_clone/main.dart';
+import 'package:amazon_clone/model/product.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter/foundation.dart';
 
 class FirebaseMessagingService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   static final FlutterLocalNotificationsPlugin
       _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final SearchServices _searchServices = SearchServices();
 
   Future<void> requestPermission() async {
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
@@ -33,7 +38,12 @@ class FirebaseMessagingService {
     const InitializationSettings initializationSettings =
         InitializationSettings(android: androidSettings);
 
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse: (NotificationResponse response) {
+      if (response.payload != null) {
+        _navigateToProductDetails(response.payload!);
+      }
+    });
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(
@@ -48,10 +58,19 @@ class FirebaseMessagingService {
 
       _showNotification(message);
     });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      String? productId = message.data['productId'];
+      if (productId != null) {
+        _navigateToProductDetails(productId);
+      }
+    });
   }
 
   // Show Notification using Flutter Local Notifications
   static Future<void> _showNotification(RemoteMessage message) async {
+    String? productId = message.data['productId'];
+
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'high_importance_channel', // ID
@@ -68,6 +87,7 @@ class FirebaseMessagingService {
       message.notification?.title ?? 'New Notification',
       message.notification?.body ?? 'No message body',
       platformChannelSpecifics,
+      payload: productId,
     );
   }
 
@@ -79,11 +99,19 @@ class FirebaseMessagingService {
 
     onMessageListener();
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print("Message clicked!");
-    });
-
     String? token = await _firebaseMessaging.getToken();
     debugPrint("FCM Token: $token");
+  }
+
+  void _navigateToProductDetails(String productId) async {
+    Product product = await _searchServices.fetchProductSearchedByID(
+      context: navigatorKey.currentContext!,
+      productId: productId,
+    );
+
+    navigatorKey.currentState?.pushNamed(
+      ProductDetailsScreen.routeName,
+      arguments: product,
+    );
   }
 }

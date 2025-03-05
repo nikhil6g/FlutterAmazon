@@ -14,15 +14,29 @@ const fetchCategoryWiseProduct = asyncHandler(async (req, res) => {
   }
 });
 
-//@description     Get all the search products
-//@route           GET /api/products/search/:name
+//@description     Search products by query or get product by ID
+//@route           GET /api/products/search
 //@access          Protected
 const searchProduct = asyncHandler(async (req, res) => {
   try {
-    const searchQuery = req.params.name; //url query- actually in url some data is sent and this is category
-    const products = await Product.find({
-      name: { $regex: searchQuery },
-    });
+    const { searchQuery, productId } = req.query;
+
+    let products;
+
+    if (productId) {
+      products = await Product.findById(productId);
+    } else if (searchQuery) {
+      products = await Product.find({
+        name: { $regex: searchQuery },
+      });
+    } else {
+      return res.status(400).json({ message: "Provide a query or productId" });
+    }
+
+    if (!products) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
     res.json(products);
   } catch (e) {
     res.status(500).json({ err: e.message });

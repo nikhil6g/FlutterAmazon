@@ -18,7 +18,7 @@ A comprehensive Full Stack Amazon Clone with an integrated Admin Panel, built us
   - Getting Deal of the Day
 - 🛒 **Cart & Checkout**
   - Cart Management
-  - Checking out with Google/Apple Pay
+  - Checking out with Google Pay
 - 📦 **Order Management**
   - Viewing My Orders
   - Viewing Order Details & Status

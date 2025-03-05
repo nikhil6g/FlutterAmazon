@@ -1,4 +1,4 @@
-//import "./services/notificationWorker.js";
+require("./services/notificationWorker.js");
 const express = require("express");
 const connectDB = require("./config/db");
 

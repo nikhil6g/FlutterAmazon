@@ -4,16 +4,12 @@ dotenv = require("dotenv");
 const colors = require("colors");
 
 dotenv.config();
+
+//When a Redis connection is in subscription mode (subscribe command is called), it can’t be used for anything else—not even publishing.
+//redisClient is used for storage & publishing.
+//redisSubscriber is used for real-time notifications.
+
 const redisClient = new Redis(process.env.REDIS_URL);
 const redisSubscriber = new Redis(process.env.REDIS_URL);
-// const connectRedis = async () => {
-//   try {
-//     await redis.set("testKey", "Hello from Upstash");
-//     const value = await redis.get("testKey");
-//     console.log(`Redis Test: ${value}`.green.bold);
-//   } catch (err) {
-//     console.error("Redis Error:", err);
-//   }
-// };
 
 module.exports = { redisClient, redisSubscriber };

@@ -1,5 +1,5 @@
-import { redisSubscriber, redisClient } from "../config/redis.js";
-import admin from "firebase-admin";
+const { redisSubscriber, redisClient } = require("../config/redis.js");
+const { admin } = require("../config/firebaseAdmin");
 
 redisSubscriber.subscribe("product_notifications");
 
@@ -11,12 +11,20 @@ redisSubscriber.on("message", async (channel, message) => {
       `notifications:product:${productId}`
     );
 
-    subscribers.forEach(async (userData) => {
-      const { userId, fcmToken } = JSON.parse(userData);
+    for (const userData of subscribers) {
+      const { userId, fcmToken, isBanned } = JSON.parse(userData);
+
+      if (isBanned) {
+        continue; //skip sending notification if the user is banned
+      }
+
       const payload = {
         notification: {
           title: "Product Available",
           body: `The product ${productName} is now back in stock!`,
+        },
+        data: {
+          productId: productId,
         },
         token: fcmToken,
       };
@@ -27,7 +35,7 @@ redisSubscriber.on("message", async (channel, message) => {
       } catch (error) {
         console.error("FCM Error:", error);
       }
-    });
+    }
 
     await redisClient.del(`notifications:product:${productId}`); // Remove subscriptions after notification
   }
