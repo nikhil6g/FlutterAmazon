@@ -143,6 +143,7 @@ const orderProduct = asyncHandler(async (req, res) => {
     let products = [];
     for (let i = 0; i < cart.length; i++) {
       let product = await Product.findById(cart[i].product._id);
+      product.soldCount += cart[i].quantity;
       product.quantity -= cart[i].quantity;
       products.push({ product, quantity: cart[i].quantity });
       await product.save();

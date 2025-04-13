@@ -20,10 +20,12 @@ class AdminServices {
       {required BuildContext context,
       required String name,
       required String description,
+      required String brand,
       required double price,
       required double quantity,
       required String category,
       required List<File> images,
+      required String tags,
       required VoidCallback onSuccess}) async {
     try {
       //because we are in shared cluster on mongodb so we can store only 512 mb data
@@ -46,10 +48,12 @@ class AdminServices {
       Product product = Product(
         name: name,
         description: description,
+        brand: brand,
         quantity: quantity,
         price: price,
         imageUrls: imageUrls,
         category: category,
+        tags: tags,
       );
 
       http.Response res = await http.post(Uri.parse('$uri/admin/add-product'),

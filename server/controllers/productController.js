@@ -51,10 +51,13 @@ const rateProduct = asyncHandler(async (req, res) => {
     const { id, rating } = req.body;
     let product = await Product.findById(id);
 
+    let oldRating = null;
+
     //checking for matching userid in ratings and delete this
     for (let j = 0; j < product.ratings.length; j++) {
       //here product.ratings is an array
       if (product.ratings[j].userId == req.userId) {
+        oldRating = product.ratings[j].rating;
         //here userId of client is given in auth middleware
         product.ratings.splice(j, 1); //here splice is just delete the rating given by client previously
         break;
@@ -66,6 +69,18 @@ const rateProduct = asyncHandler(async (req, res) => {
       rating,
     };
     product.ratings.push(ratingScema);
+
+    if (!oldRating) {
+      //when user already update the product
+      product.avgRating =
+        (product.avgRating * product.ratings.length - oldRating + rating) /
+        product.ratings.length;
+    } else {
+      //first time user rated the product
+      product.avgRating =
+        (product.avgRating * (product.ratings.length - 1) + rating) /
+        product.ratings.length;
+    }
     product = await product.save();
 
     res.json(product);

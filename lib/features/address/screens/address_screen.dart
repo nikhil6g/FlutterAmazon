@@ -45,10 +45,13 @@ class _AddressScreenState extends State<AddressScreen> {
   void initState() {
     super.initState();
     _googlePayConfigFuture = PaymentConfiguration.fromAsset('gpay.json');
-    _paymentItems.add(PaymentItem(
+    _paymentItems.add(
+      PaymentItem(
         amount: widget.totalAmount,
         label: 'Total Amout',
-        status: PaymentItemStatus.final_price));
+        status: PaymentItemStatus.final_price,
+      ),
+    );
   }
 
   void onGooglePayResult(paymentResult) {
@@ -58,13 +61,15 @@ class _AddressScreenState extends State<AddressScreen> {
         .address
         .isEmpty) {
       addressServices.saveUserAddress(
-          context: context, address: addressToBeUsed);
-    }
-    addressServices.placeOrder(
         context: context,
         address: addressToBeUsed,
-        totalAmount: double.parse(widget.totalAmount));
-    print("order placed");
+      );
+    }
+    addressServices.placeOrder(
+      context: context,
+      address: addressToBeUsed,
+      totalAmount: double.parse(widget.totalAmount),
+    );
   }
 
   void payPressed(String addressFromProvider) {
@@ -93,13 +98,14 @@ class _AddressScreenState extends State<AddressScreen> {
     var address = context.watch<UserProvider>().user.address;
     return Scaffold(
       appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(55),
-          child: AppBar(
-            flexibleSpace: Container(
-              decoration:
-                  const BoxDecoration(gradient: GlobalVariables.appBarGradient),
-            ),
-          )),
+        preferredSize: const Size.fromHeight(55),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration:
+                const BoxDecoration(gradient: GlobalVariables.appBarGradient),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -133,61 +139,63 @@ class _AddressScreenState extends State<AddressScreen> {
                   ],
                 ),
               Form(
-                  key: _addressFormKey,
-                  child: Column(
-                    children: [
-                      CustomTextField(
-                        controller: flatBuildingController,
-                        hintText: 'Flat, House No, Building',
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      CustomTextField(
-                        controller: areaController,
-                        hintText: 'Area, street',
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      CustomTextField(
-                        controller: pincodeController,
-                        hintText: 'Pincode',
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      CustomTextField(
-                        controller: cityController,
-                        hintText: 'Town/City',
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                    ],
-                  )),
+                key: _addressFormKey,
+                child: Column(
+                  children: [
+                    CustomTextField(
+                      controller: flatBuildingController,
+                      hintText: 'Flat, House No, Building',
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    CustomTextField(
+                      controller: areaController,
+                      hintText: 'Area, street',
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    CustomTextField(
+                      controller: pincodeController,
+                      hintText: 'Pincode',
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    CustomTextField(
+                      controller: cityController,
+                      hintText: 'Town/City',
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                  ],
+                ),
+              ),
               FutureBuilder<PaymentConfiguration>(
-                  future: _googlePayConfigFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return GooglePayButton(
-                        onPressed: () => payPressed(address),
-                        width: double.infinity,
-                        height: 50,
-                        theme: GooglePayButtonTheme.dark,
-                        paymentConfiguration: snapshot.data!,
-                        paymentItems: _paymentItems,
-                        type: GooglePayButtonType.buy,
-                        margin: const EdgeInsets.only(top: 15.0),
-                        onPaymentResult: onGooglePayResult,
-                        loadingIndicator: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  })
+                future: _googlePayConfigFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return GooglePayButton(
+                      onPressed: () => payPressed(address),
+                      width: double.infinity,
+                      height: 50,
+                      theme: GooglePayButtonTheme.dark,
+                      paymentConfiguration: snapshot.data!,
+                      paymentItems: _paymentItems,
+                      type: GooglePayButtonType.buy,
+                      margin: const EdgeInsets.only(top: 15.0),
+                      onPaymentResult: onGooglePayResult,
+                      loadingIndicator: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+              )
             ],
           ),
         ),

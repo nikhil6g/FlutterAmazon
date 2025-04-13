@@ -9,15 +9,25 @@ const { redisClient } = require("../config/redis");
 //@access          Protected
 const addProduct = asyncHandler(async (req, res) => {
   try {
-    const { name, description, imageUrls, quantity, price, category } =
-      req.body;
-    let product = new Product({
+    const {
       name,
       description,
+      brand,
       imageUrls,
       quantity,
       price,
       category,
+      tags,
+    } = req.body;
+    let product = new Product({
+      name,
+      description,
+      brand,
+      imageUrls,
+      quantity,
+      price,
+      category,
+      tags,
     });
     product = await product.save();
     res.json(product);
@@ -58,8 +68,17 @@ const deleteProduct = asyncHandler(async (req, res) => {
 //@access          Protected
 const updateProductDetails = asyncHandler(async (req, res) => {
   try {
-    const { name, description, imageUrls, quantity, price, category, id } =
-      req.body;
+    const {
+      name,
+      description,
+      brand,
+      imageUrls,
+      quantity,
+      price,
+      category,
+      tags,
+      id,
+    } = req.body;
     let oldProductDetails = await Product.findById(id);
     if (!oldProductDetails) {
       return res.status(404).json({ err: "Product not found" });
@@ -69,10 +88,12 @@ const updateProductDetails = asyncHandler(async (req, res) => {
 
     oldProductDetails.name = name;
     oldProductDetails.description = description;
+    oldProductDetails.brand = brand;
     oldProductDetails.imageUrls = imageUrls;
     oldProductDetails.quantity = quantity;
     oldProductDetails.price = price;
     oldProductDetails.category = category;
+    oldProductDetails.tags = tags;
 
     await oldProductDetails.save();
 

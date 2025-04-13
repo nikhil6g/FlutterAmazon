@@ -1,6 +1,6 @@
 import 'package:amazon_clone/common/widgets/loader.dart';
 import 'package:amazon_clone/features/account/widget/single_product.dart';
-import 'package:amazon_clone/features/admin/screens/add_product_screen.dart';
+import 'package:amazon_clone/features/admin/screens/add_or_update_product_screen.dart';
 import 'package:amazon_clone/features/admin/services/admin_services.dart';
 import 'package:amazon_clone/features/product_details/screens/product_details_screen.dart';
 import 'package:amazon_clone/model/product.dart';
@@ -28,8 +28,8 @@ class _ProductScreenState extends State<ProductScreen> {
   @override
   void initState() {
     super.initState();
-    fetchAllProducts(
-        context); //as initState can't be declared as async so we create a new function is added
+    //as initState can't be declared as async so we create a new function is added
+    fetchAllProducts(context);
   }
 
   fetchAllProducts(BuildContext context) async {
@@ -48,7 +48,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   void navigateToVoidAddProduct() {
-    Navigator.pushNamed(context, AddProductScreen.routeName);
+    Navigator.pushNamed(context, AddOrUpdateProductScreen.routeName);
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'package:amazon_clone/common/widgets/bottom_bar.dart';
 import 'package:amazon_clone/features/Auth/Screen/auth_screen.dart';
 import 'package:amazon_clone/features/address/screens/address_screen.dart';
-import 'package:amazon_clone/features/admin/screens/add_product_screen.dart';
+import 'package:amazon_clone/features/admin/screens/add_or_update_product_screen.dart';
 import 'package:amazon_clone/features/admin/screens/admin_screen.dart';
 import 'package:amazon_clone/features/home/screen/category_deals_screen.dart';
 import 'package:amazon_clone/features/home/screen/home_screen.dart';
@@ -34,10 +34,13 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
         settings: routeSettings,
         builder: (_) => const HomeScreen(),
       );
-    case AddProductScreen.routeName:
+    case AddOrUpdateProductScreen.routeName:
+      final product = routeSettings.arguments as Product?;
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_) => const AddProductScreen(),
+        builder: (_) => AddOrUpdateProductScreen(
+          product: product,
+        ),
       );
     case AddressScreen.routeName:
       var totalAmount = routeSettings.arguments as String;
@@ -81,10 +84,11 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
       );
     default:
       return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-                body: Center(
-                  child: Text('Screen does not exist'),
-                ),
-              ));
+        builder: (_) => const Scaffold(
+          body: Center(
+            child: Text('Screen does not exist'),
+          ),
+        ),
+      );
   }
 }
